@@ -733,8 +733,8 @@ local menu_position =
 local modal_element = create_instance("TextButton", {
     ["BackgroundTransparency"] = 1,
     ["Modal"] = false,
-    ["Size"] = UDim2.fromScale(0, 0),
-    ["AnchorPoint"] = Vector2.zero,
+    ["Size"] = UDim2.fromScale(1, 1),
+    ["Position"] = UDim2.fromScale(0, 0),
     ["Text"] = "",
     ["ZIndex"] = -999,
     ["Parent"] = modal_screen,
@@ -4106,27 +4106,35 @@ modal_element.Modal = menu_open
 		end
 
 context_action_service:BindAction(
-    context_action_click,
-    handle_click,
-    false,
-    Enum["UserInputType"]["MouseButton1"],
-    Enum["UserInputType"]["Touch"]
+create_connection(
+    user_input_service["InputBegan"],
+    LPH_NO_VIRTUALIZE(function(input, gpe)
+        local user_input_type = input["UserInputType"]
+        if user_input_type == Enum["UserInputType"]["MouseButton1"]
+            or user_input_type == Enum["UserInputType"]["Touch"]
+        then
+            if menu_open then
+                handle_click(nil, Enum["UserInputState"]["Begin"], input)
+            end
+        end
+    end)
 )
-			
-context_action_service:BindAction(
-    context_action_scroll,
-    handle_scroll,
-    false,
-    Enum["UserInputType"]["MouseWheel"]
+				
+create_connection(
+    user_input_service["InputChanged"],
+    LPH_NO_VIRTUALIZE(function(input, gpe)
+        if input["UserInputType"] == Enum["UserInputType"]["MouseWheel"] then
+            if menu_open then
+                handle_scroll(nil, Enum["UserInputState"]["Change"], input)
+            end
+        end
+    end)
 )
 
 		local old_tick = clock()
 		menu_tick = old_tick
 
 		if not menu_open then
-			context_action_service:UnbindAction(context_action_click)
-			context_action_service:UnbindAction(context_action_scroll)
-
 			delay(0.17, function()
 				if old_tick == menu_tick then
 					frame["Visible"] = false
