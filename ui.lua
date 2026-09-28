@@ -4016,8 +4016,17 @@ local menu_position =
 		tween(cursor, transparency, exponential, out, 0.18)
 
 		local mouse_position = get_mouse_location(user_input_service)
-		user_input_service["MouseIconEnabled"] = not menu_open
-		cursor["Position"] = udim2_new(0, mouse_position["X"], 0, mouse_position["Y"])
+user_input_service["MouseIconEnabled"] = false -- 永遠隱藏遊戲鼠標，因為庫自己畫了
+cursor["Position"] = udim2_new(0, mouse_position["X"], 0, mouse_position["Y"])
+
+-- 新增：控制滑鼠鎖定
+if menu_open then
+    -- UI 開啟：解鎖滑鼠
+    user_input_service.MouseBehavior = Enum.MouseBehavior.Default
+else
+    -- UI 關閉：還原（可選，看你遊戲原本是什麼）
+    -- user_input_service.MouseBehavior = Enum.MouseBehavior.LockCenter
+end
 
 		frame["Visible"] = not a
 		inside["Visible"] = not a
@@ -4084,19 +4093,40 @@ local menu_position =
 			end
 		end
 
-		context_action_service:BindAction(
-			context_action_click,
-			handle_click,
-			false,
-			Enum["UserInputType"]["MouseButton1"],
-			Enum["UserInputType"]["Touch"]
-		)
-		context_action_service:BindAction(
-			context_action_scroll,
-			handle_scroll,
-			false,
-			Enum["UserInputType"]["MouseWheel"]
-		)
+context_action_service:BindActionAtPriority(
+    context_action_click,
+    function(name, state, input)
+        -- 先判斷是否在 UI 內
+        if state == Enum.UserInputState.Begin then
+            local mouse_position = get_mouse_location(user_input_service)
+            local mx, my = mouse_position.X, mouse_position.Y
+            local in_menu =
+                mx > menu_position["X"]["Offset"]
+                and mx < menu_position["X"]["Offset"] + frame["Size"]["X"]["Offset"]
+                and my > menu_position["Y"]["Offset"]
+                and my < menu_position["Y"]["Offset"] + frame["Size"]["Y"]["Offset"]
+
+            if not in_menu then
+                return Enum.ContextActionResult.Pass
+            end
+        end
+
+        -- 在 UI 內，執行原本的 handle_click 邏輯
+        handle_click(name, state, input)
+        return Enum.ContextActionResult.Sink
+    end,
+    false,
+    3000,
+    Enum.UserInputType.MouseButton1,
+    Enum.UserInputType.Touch
+)
+			
+context_action_service:BindAction(
+    context_action_scroll,
+    handle_scroll,
+    false,
+    Enum["UserInputType"]["MouseWheel"]
+)
 
 		local old_tick = clock()
 		menu_tick = old_tick
@@ -8698,6 +8728,16 @@ local menu_position =
 				for i = 1, #heartbeat do
 					spawn(heartbeat[i], dt)
 				end
+
+				if menu_open then
+            local uis = game:GetService("UserInputService")
+            if uis.MouseBehavior ~= Enum.MouseBehavior.Default then
+                uis.MouseBehavior = Enum.MouseBehavior.Default
+            end
+            if uis.MouseIconEnabled then
+                uis.MouseIconEnabled = false
+            end
+        end
 			end)
 		)
 
