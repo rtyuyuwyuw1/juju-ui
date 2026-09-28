@@ -4033,18 +4033,12 @@ local modal_element = create_instance("TextButton", {
 
 		tween(cursor, transparency, exponential, out, 0.18)
 
-		local mouse_position = get_mouse_location(user_input_service)
-user_input_service["MouseIconEnabled"] = false -- 永遠隱藏遊戲鼠標，因為庫自己畫了
+local mouse_position = get_mouse_location(user_input_service)
+user_input_service["MouseIconEnabled"] = false
 cursor["Position"] = udim2_new(0, mouse_position["X"], 0, mouse_position["Y"])
 
--- 新增：控制滑鼠鎖定
-if menu_open then
-    -- UI 開啟：解鎖滑鼠
-    user_input_service.MouseBehavior = Enum.MouseBehavior.Default
-else
-    -- UI 關閉：還原（可選，看你遊戲原本是什麼）
-    -- user_input_service.MouseBehavior = Enum.MouseBehavior.LockCenter
-end
+-- Modal 控制：同時解鎖滑鼠 + 吃掉遊戲輸入
+modal_element.Modal = menu_open
 
 		frame["Visible"] = not a
 		inside["Visible"] = not a
@@ -4111,33 +4105,12 @@ end
 			end
 		end
 
-context_action_service:BindActionAtPriority(
+context_action_service:BindAction(
     context_action_click,
-    function(name, state, input)
-        -- 先判斷是否在 UI 內
-        if state == Enum.UserInputState.Begin then
-            local mouse_position = get_mouse_location(user_input_service)
-            local mx, my = mouse_position.X, mouse_position.Y
-local menu_size = frame["real_size"]  -- Vector2
-local in_menu =
-    mx > menu_position["X"]["Offset"]
-    and mx < menu_position["X"]["Offset"] + menu_size["X"]
-    and my > menu_position["Y"]["Offset"]
-    and my < menu_position["Y"]["Offset"] + menu_size["Y"]
-
-            if not in_menu then
-                return Enum.ContextActionResult.Pass
-            end
-        end
-
-        -- 在 UI 內，執行原本的 handle_click 邏輯
-        handle_click(name, state, input)
-        return Enum.ContextActionResult.Sink
-    end,
+    handle_click,
     false,
-    3000,
-    Enum.UserInputType.MouseButton1,
-    Enum.UserInputType.Touch
+    Enum["UserInputType"]["MouseButton1"],
+    Enum["UserInputType"]["Touch"]
 )
 			
 context_action_service:BindAction(
@@ -8694,7 +8667,10 @@ context_action_service:BindAction(
 
 		env["_JUJU"] = function()
 			env["_JUJU"] = nil
-
+			if modal_screen then
+    			modal_screen:Destroy()
+    			modal_screen = nil
+			end
 			for _, group in menu["groups"] do
 				for _, tab in group["tabs"] do
 					for _, section in tab["sections"] do
@@ -8747,16 +8723,6 @@ context_action_service:BindAction(
 				for i = 1, #heartbeat do
 					spawn(heartbeat[i], dt)
 				end
-
-				if menu_open then
-            local uis = game:GetService("UserInputService")
-            if uis.MouseBehavior ~= Enum.MouseBehavior.Default then
-                uis.MouseBehavior = Enum.MouseBehavior.Default
-            end
-            if uis.MouseIconEnabled then
-                uis.MouseIconEnabled = false
-            end
-        end
 			end)
 		)
 
