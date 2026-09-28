@@ -15,11 +15,16 @@ if ok and logo_data and #logo_data > 0 then
 else
     warn("faield to doownload logo")
 end
+if ok and logo_data and #logo_data > 0 then
+    writefile(folder .. "/assets/logo.png", logo_data)
+else
+    warn("faield to doownload logo")
+end
 
 getgenv().menu_width  = 700
 getgenv().menu_height = 600
 getgenv().script_name = "Alacrity"
-getgenv().script_version = "v2"
+getgenv().script_version = ".eu.cc"
 
 local lib = loadstring(game:HttpGet(
     "https://github.com/rtyuyuwyuw1/juju-ui/raw/refs/heads/main/ui.lua"))()
