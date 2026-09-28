@@ -3375,6 +3375,8 @@ local modal_element = create_instance("TextButton", {
 			end
 		end
 
+		moving = create_connection(mouse["Move"], function()
+		
 		local type = input["UserInputType"]
 		if
 			(type ~= Enum["UserInputType"]["MouseButton1"] and type ~= Enum["UserInputType"]["Touch"])
@@ -3990,29 +3992,24 @@ create_connection(
     end)
 )
 
-	create_connection(
+create_connection(
     user_input_service["InputEnded"],
     LPH_NO_VIRTUALIZE(function(input, gpe)
-        local user_input_type = input["UserInputType"]
-        if user_input_type == Enum["UserInputType"]["MouseButton1"]
-            or user_input_type == Enum["UserInputType"]["Touch"]
-        then
-            if moving then
-                moving:Disconnect()
-                moving = nil
+        if moving then
+            moving:Disconnect()
+            moving = nil
 
-                if drag_frame["Visible"] then
-                    frame["Position"] = menu_position
-                    frame["Visible"] = true
-                    tween(drag_frame, hide_transparency, circular, out, 0.12)
-                    tween(drag_logo, hide_transparency, circular, out, 0.12)
-                    tween(drag_inside, hide_transparency, circular, out, 0.12)
-                    delay(0.12, function()
-                        if not moving then
-                            drag_frame["Visible"] = false
-                        end
-                    end)
-                end
+            if drag_frame["Visible"] then
+                frame["Position"] = menu_position
+                frame["Visible"] = true
+                tween(drag_frame, hide_transparency, circular, out, 0.12)
+                tween(drag_logo, hide_transparency, circular, out, 0.12)
+                tween(drag_inside, hide_transparency, circular, out, 0.12)
+                delay(0.12, function()
+                    if not moving then
+                        drag_frame["Visible"] = false
+                    end
+                end)
             end
         end
     end)
@@ -4103,6 +4100,7 @@ user_input_service["MouseIconEnabled"] = false
 cursor["Position"] = udim2_new(0, mouse_position["X"], 0, mouse_position["Y"])
 
 modal_element.Modal = menu_open
+modal_element.Visible = menu_open
 
 		frame["Visible"] = not a
 		inside["Visible"] = not a
@@ -5448,7 +5446,7 @@ modal_element.Modal = menu_open
 						end
 					end, true, true)
 				end)
-
+				
 				create_click_connection(parent, slider_border, function(mouse_position)
 					local min, max, decimals = properties["min"], properties["max"], properties["decimals"]
 					moving = create_connection(mouse["Move"], function()
