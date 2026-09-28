@@ -4100,11 +4100,12 @@ context_action_service:BindActionAtPriority(
         if state == Enum.UserInputState.Begin then
             local mouse_position = get_mouse_location(user_input_service)
             local mx, my = mouse_position.X, mouse_position.Y
-            local in_menu =
-                mx > menu_position["X"]["Offset"]
-                and mx < menu_position["X"]["Offset"] + frame["Size"]["X"]["Offset"]
-                and my > menu_position["Y"]["Offset"]
-                and my < menu_position["Y"]["Offset"] + frame["Size"]["Y"]["Offset"]
+local menu_size = frame["real_size"]  -- Vector2
+local in_menu =
+    mx > menu_position["X"]["Offset"]
+    and mx < menu_position["X"]["Offset"] + menu_size["X"]
+    and my > menu_position["Y"]["Offset"]
+    and my < menu_position["Y"]["Offset"] + menu_size["Y"]
 
             if not in_menu then
                 return Enum.ContextActionResult.Pass
