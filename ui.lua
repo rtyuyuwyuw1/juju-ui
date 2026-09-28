@@ -3374,8 +3374,6 @@ local modal_element = create_instance("TextButton", {
 				end)
 			end
 		end
-
-		moving = create_connection(mouse["Move"], function()
 		
 		local type = input["UserInputType"]
 		if
