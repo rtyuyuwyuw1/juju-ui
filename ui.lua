@@ -3989,12 +3989,53 @@ create_connection(
         end
     end)
 )
+
+	create_connection(
+    user_input_service["InputEnded"],
+    LPH_NO_VIRTUALIZE(function(input, gpe)
+        local user_input_type = input["UserInputType"]
+        if user_input_type == Enum["UserInputType"]["MouseButton1"]
+            or user_input_type == Enum["UserInputType"]["Touch"]
+        then
+            if moving then
+                moving:Disconnect()
+                moving = nil
+
+                if drag_frame["Visible"] then
+                    frame["Position"] = menu_position
+                    frame["Visible"] = true
+                    tween(drag_frame, hide_transparency, circular, out, 0.12)
+                    tween(drag_logo, hide_transparency, circular, out, 0.12)
+                    tween(drag_inside, hide_transparency, circular, out, 0.12)
+                    delay(0.12, function()
+                        if not moving then
+                            drag_frame["Visible"] = false
+                        end
+                    end)
+                end
+            end
+        end
+    end)
+)
 	
 	pop_menu = LPH_JIT_MAX(function(a)
 		if moving then
-			moving:Disconnect()
-			moving = nil
-		end
+        moving:Disconnect()
+        moving = nil
+
+        if drag_frame["Visible"] then
+            frame["Position"] = menu_position
+            frame["Visible"] = true
+            tween(drag_frame, hide_transparency, circular, out, 0.12)
+            tween(drag_logo, hide_transparency, circular, out, 0.12)
+            tween(drag_inside, hide_transparency, circular, out, 0.12)
+            delay(0.12, function()
+                if not moving then
+                    drag_frame["Visible"] = false
+                end
+            end)
+        end
+    end
 
 		if drag_frame["Visible"] then
 			drag_frame["Visible"] = false
