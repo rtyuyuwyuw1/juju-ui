@@ -722,6 +722,24 @@ local menu_position =
 
 	-- > ( menu creation )
 
+	local modal_screen = create_instance("ScreenGui", {
+    ["Name"] = "\0",
+    ["ResetOnSpawn"] = false,
+    ["ZIndexBehavior"] = Enum.ZIndexBehavior.Global,
+    ["DisplayOrder"] = -999,
+    ["Parent"] = hui,
+})
+
+local modal_element = create_instance("TextButton", {
+    ["BackgroundTransparency"] = 1,
+    ["Modal"] = false,
+    ["Size"] = UDim2.fromScale(0, 0),
+    ["AnchorPoint"] = Vector2.zero,
+    ["Text"] = "",
+    ["ZIndex"] = -999,
+    ["Parent"] = modal_screen,
+})
+	
 	local cursor = drawing_proxy["new"]("Image", {
 		["Position"] = menu_position,
 		["Size"] = udim2_new(0, 24, 0, 24),
