@@ -4105,7 +4105,6 @@ modal_element.Modal = menu_open
 			end
 		end
 
-context_action_service:BindAction(
 create_connection(
     user_input_service["InputBegan"],
     LPH_NO_VIRTUALIZE(function(input, gpe)
