@@ -25,6 +25,9 @@ end
 -- > ( global cheat variables )
 
 local file_path = getgenv().custom_folder or "juju recode"
+local MENU_WIDTH  = getgenv().menu_width  or 575
+local MENU_HEIGHT = getgenv().menu_height or 450
+
 local user_input_service = cloneref(game:GetService("UserInputService"))
 local get_mouse_location = user_input_service["GetMouseLocation"]
 local players_service = cloneref(game:GetService("Players"))
@@ -495,8 +498,8 @@ do
 	local cog_image_data = base64_decode(
 		"iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAMAAAC67D+PAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAGUExURf///wAAAFXC034AAAACdFJOU/8A5bcwSgAAAAlwSFlzAAAQKAAAECgBJz8A6wAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIDUuMS4y+7wDtgAAALZlWElmSUkqAAgAAAAFABoBBQABAAAASgAAABsBBQABAAAAUgAAACgBAwABAAAAAgAAADEBAgAQAAAAWgAAAGmHBAABAAAAagAAAAAAAAB3mgEA6AMAAHeaAQDoAwAAUGFpbnQuTkVUIDUuMS4yAAMAAJAHAAQAAAAwMjMwAaADAAEAAAABAAAABaAEAAEAAACUAAAAAAAAAAIAAQACAAQAAABSOTgAAgAHAAQAAAAwMTAwAAAAAEyPNqYn0aVIAAAALElEQVQYV2NgBAIGCAmioQhIQACQCZaGYBAJoZGYSApgUhATYAiikJGRkREACr4AMZ+SUSoAAAAASUVORK5CYII="
 	)
-	local menu_position =
-		udim2_new(0, camera["ViewportSize"]["X"] / 2 - 575 / 2, 0, camera["ViewportSize"]["Y"] / 2 - 450 * 0.5)
+local menu_position =
+    udim2_new(0, camera["ViewportSize"]["X"] / 2 - MENU_WIDTH / 2, 0, camera["ViewportSize"]["Y"] / 2 - MENU_HEIGHT * 0.5)
 
 	local half_transparency = { Transparency = 0.5 }
 	local stop_panel_search = nil
@@ -734,7 +737,7 @@ do
 
 	local frame = drawing_proxy["new"]("Image", {
 		["Position"] = menu_position,
-		["Size"] = udim2_new(0, 575, 0, 450),
+    	["Size"] = udim2_new(0, MENU_WIDTH, 0, MENU_HEIGHT),
 		["Color"] = menu["colors"]["background"],
 		["Rounding"] = 4,
 		["Data"] = pixel_image_data,
@@ -924,7 +927,7 @@ do
 
 	local drag_frame = drawing_proxy["new"]("Image", {
 		["Position"] = menu_position,
-		["Size"] = udim2_new(0, 575, 0, 450),
+		["Size"] = udim2_new(0, MENU_WIDTH, 0, MENU_HEIGHT),
 		["Color"] = menu["colors"]["background"],
 		["Rounding"] = 4,
 		["Data"] = pixel_image_data,
@@ -4296,8 +4299,8 @@ do
 			end
 		end
 
-		local size = current_y_offset > 405 and udim2_new(0, 575, 0, 450 + (current_y_offset - 405))
-			or udim2_new(0, 575, 0, 450)
+				local size = current_y_offset > (MENU_HEIGHT - 45) and udim2_new(0, MENU_WIDTH, 0, MENU_HEIGHT + (current_y_offset - (MENU_HEIGHT - 45)))
+			or udim2_new(0, MENU_WIDTH, 0, MENU_HEIGHT)
 		drag_frame["Size"] = size
 		frame["Size"] = size
 	end
