@@ -3965,7 +3965,31 @@ local modal_element = create_instance("TextButton", {
 	end)
 
 	local hovering = nil
+	create_connection(
+    user_input_service["InputBegan"],
+    LPH_NO_VIRTUALIZE(function(input, gpe)
+        local user_input_type = input["UserInputType"]
+        if user_input_type == Enum["UserInputType"]["MouseButton1"]
+            or user_input_type == Enum["UserInputType"]["Touch"]
+        then
+            if menu_open then
+                handle_click(nil, Enum["UserInputState"]["Begin"], input)
+            end
+        end
+    end)
+)
 
+create_connection(
+    user_input_service["InputChanged"],
+    LPH_NO_VIRTUALIZE(function(input, gpe)
+        if input["UserInputType"] == Enum["UserInputType"]["MouseWheel"] then
+            if menu_open then
+                handle_scroll(nil, Enum["UserInputState"]["Change"], input)
+            end
+        end
+    end)
+)
+	
 	pop_menu = LPH_JIT_MAX(function(a)
 		if moving then
 			moving:Disconnect()
@@ -4037,7 +4061,6 @@ local mouse_position = get_mouse_location(user_input_service)
 user_input_service["MouseIconEnabled"] = false
 cursor["Position"] = udim2_new(0, mouse_position["X"], 0, mouse_position["Y"])
 
--- Modal 控制：同時解鎖滑鼠 + 吃掉遊戲輸入
 modal_element.Modal = menu_open
 
 		frame["Visible"] = not a
@@ -4104,31 +4127,6 @@ modal_element.Modal = menu_open
 				end
 			end
 		end
-
-create_connection(
-    user_input_service["InputBegan"],
-    LPH_NO_VIRTUALIZE(function(input, gpe)
-        local user_input_type = input["UserInputType"]
-        if user_input_type == Enum["UserInputType"]["MouseButton1"]
-            or user_input_type == Enum["UserInputType"]["Touch"]
-        then
-            if menu_open then
-                handle_click(nil, Enum["UserInputState"]["Begin"], input)
-            end
-        end
-    end)
-)
-				
-create_connection(
-    user_input_service["InputChanged"],
-    LPH_NO_VIRTUALIZE(function(input, gpe)
-        if input["UserInputType"] == Enum["UserInputType"]["MouseWheel"] then
-            if menu_open then
-                handle_scroll(nil, Enum["UserInputState"]["Change"], input)
-            end
-        end
-    end)
-)
 
 		local old_tick = clock()
 		menu_tick = old_tick
@@ -8708,10 +8706,8 @@ create_connection(
 				connections[i]:Disconnect()
 			end
 
-			context_action_service:UnbindAction(context_action_click)
 			context_action_service:UnbindAction(context_action_typing)
-			context_action_service:UnbindCoreAction(context_action_typing_core)
-			context_action_service:UnbindAction(context_action_scroll)
+context_action_service:UnbindCoreAction(context_action_typing_core)
 
 			env["getrawmetatable"] = real
 
