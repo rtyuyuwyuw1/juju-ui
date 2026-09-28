@@ -4100,6 +4100,13 @@ cursor["Position"] = udim2_new(0, mouse_position["X"], 0, mouse_position["Y"])
 modal_element.Modal = menu_open
 modal_element.Visible = menu_open
 
+if menu_open then
+    user_input_service.MouseBehavior = Enum.MouseBehavior.Default
+    user_input_service.MouseIconEnabled = false
+else
+    user_input_service.MouseIconEnabled = true
+end
+
 		frame["Visible"] = not a
 		inside["Visible"] = not a
 
@@ -8758,13 +8765,22 @@ context_action_service:UnbindCoreAction(context_action_typing_core)
 		-- >> ( render / tween loop )
 
 		create_connection(
-			run_service["Heartbeat"],
-			LPH_NO_VIRTUALIZE(function(dt)
-				for i = 1, #heartbeat do
-					spawn(heartbeat[i], dt)
-				end
-			end)
-		)
+    run_service["Heartbeat"],
+    LPH_NO_VIRTUALIZE(function(dt)
+        for i = 1, #heartbeat do
+            spawn(heartbeat[i], dt)
+        end
+
+        if menu_open then
+            if user_input_service.MouseBehavior ~= Enum.MouseBehavior.Default then
+                user_input_service.MouseBehavior = Enum.MouseBehavior.Default
+            end
+            if user_input_service.MouseIconEnabled then
+                user_input_service.MouseIconEnabled = false
+            end
+        end
+    end)
+)
 
 		-- >> ( data )
 
