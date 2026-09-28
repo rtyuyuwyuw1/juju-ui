@@ -1,5 +1,4 @@
--- same as the one from panda, but I added custom logo way
-
+-- same as the panda recode one, but I made it can custom the size and logo
 getgenv().custom_folder = "Alacrity"
 local folder = getgenv().custom_folder
 
@@ -17,11 +16,13 @@ else
     warn("faield to doownload logo")
 end
 
+getgenv().menu_width  = 700
+getgenv().menu_height = 600
 getgenv().script_name = "Alacrity"
 getgenv().script_version = "v2"
 
 local lib = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/panduh16/juju/main/ui.lua"))()
+    "https://github.com/rtyuyuwyuw1/juju-ui/raw/refs/heads/main/ui.lua"))()
 
 local group = lib["menu"].create_group("group")
 group:create_tab("tab")
